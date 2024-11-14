@@ -10,6 +10,13 @@
 
   --vt-c-indigo: #2c3e50;
 
+  --vt-c-space-cadet: #102b53;
+  --vt-c-ucla-blue: #50698D;
+  --vt-c-pink-lavender: #ceb5d4;
+  --vt-c-pink-lavender-darker: #c99fd3;
+  --vt-c-cyan-azure: #4e7ab1;
+  --vt-c-air-superiority-blue: #7d9fc0;
+
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
   --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
@@ -47,8 +54,17 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+
+    --color-space-cadet: var(--vt-c-space-cadet);
+    --color-ucla-blue: var(--vt-c-ucla-blue);
+    --color-pink-lavender: var(--vt-c-pink-lavender);
+    --color-pink-lavender-darker: var(--vt-c-pink-lavender-darker);
+    --color-cyan-azure: var(--vt-c-cyan-azure);
+    --color-air-superiority-blue: var(--vt-c-air-superiority-blue);
   }
 }
+
+
 
 *,
 *::before,
@@ -59,9 +75,8 @@
 }
 
 body {
-  min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
+  color: var(--color-space-cadet);
+  background: var(--color-pink-lavender);
   transition:
     color 0.5s,
     background-color 0.5s;
