@@ -10,7 +10,7 @@ const errorMessage = ref('');
 async function submitForm() {
   errorMessage.value = '';
   try {
-    const response = await axios.post('/api/user/post', user.value);
+    const response = await axios.post('/api/user', user.value);
     console.log("Response from server:", response.data);
 
     // Handle successful login here, e.g., store token, redirect, etc.

@@ -11,7 +11,7 @@ const genres = ref([]);
 // Fetch books and genres
 const getBooks = async () => {
   try {
-    const response = await axios.get('/api/book/get');
+    const response = await axios.get('/api/book');
     books.value = response.data.map(book => ({
       id: book.id,
       title: book.title,
@@ -48,7 +48,7 @@ const selectedGenre = ref(null);
 // Fetch the list of genres from the backend
 const getGenres = async () => {
   try {
-    const response = await axios.get('/api/genre/get');
+    const response = await axios.get('/api/genre');
     genres.value = response.data.map(genre => ({
       genreId: genre.genreId,
       genre: genre.genre,
@@ -152,6 +152,7 @@ function redirectToCreateBook() {
 <style scoped>
 .page-layout {
   display: flex;
+  align-items: flex-start; /* Align content to the top */
 }
 
 /* Sidebar */
@@ -194,8 +195,10 @@ function redirectToCreateBook() {
 
 /* Main Content */
 .main-content {
-  margin-left: 2vw;
+  flex: 1; /* Take up available space next to the sidebar */
+  align-items: center; /* Center the content horizontally within the main content area */
   padding: 1rem;
+  margin: 0 auto; /* Center the content horizontally if there's extra space */
 }
 
 .search-container {
@@ -207,9 +210,7 @@ function redirectToCreateBook() {
   padding: 2vw;
   border: 1px solid var(--color-pink-lavender-darker);
   border-radius: 8px;
-  margin-left: 2vw;
-  margin-right: 2vw;
-  margin-bottom: 2vw;
+  margin: 0 auto 2vw auto;
 }
 
 .search-options {
@@ -281,7 +282,6 @@ function redirectToCreateBook() {
 @media (min-width: 1024px) {
   .search-container {
     width: 80%;
-    align-self: center;
   }
 }
 </style>
