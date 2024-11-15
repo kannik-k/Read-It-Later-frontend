@@ -4,9 +4,9 @@ import axios from 'axios';
 
 // Define the book object and other reactive variables
 const book = ref({ title: '', author: '', genreId: '' });
+const genre = ref({genreId: '', genre: ''})
 const genres = ref([]); // Array to hold genres
 const errorMessage = ref('');
-const successMessage = ref('');
 
 // Fetch the list of genres from the backend
 onMounted(async () => {
@@ -21,14 +21,11 @@ onMounted(async () => {
 // Define the submit function
 async function submitForm() {
   errorMessage.value = '';
-  successMessage.value = '';
   try {
     // Send the book data, including the genre ID
     const response = await axios.post('/api/book/post', book.value);
     console.log("Response from server:", response.data);
 
-    // Handle successful submission
-    successMessage.value = 'Book added successfully!';
     // Reset the form
     book.value = { title: '', author: '', genreId: '' };
   } catch (error) {
@@ -61,14 +58,13 @@ async function submitForm() {
         <!-- Dropdown to select genre by name -->
         <select id="genreId" v-model="book.genreId" required>
           <option disabled value="">Please select a genre</option>
-          <option v-for="genre in genres" :key="genre.id" :value="genre.id">
+          <option v-for="genre in genres" :key="genre.genreId" :value="genre.genreId">
             {{genre.genre}}
           </option>
         </select>
       </div>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 
       <button type="submit">Add Book</button>
     </form>
