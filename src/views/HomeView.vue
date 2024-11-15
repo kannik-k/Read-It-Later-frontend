@@ -81,30 +81,4 @@ function redirectToCreateBook() {
   display: block;
   margin-bottom: 0.5rem;
 }
-
-.books input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.books button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: var(--color-cyan-azure);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.books button:hover {
-  background-color: var(--color-ucla-blue);
-}
-
-.error-message {
-  font-size: 13px;
-  color: #cc0202;
-}
 </style>

@@ -97,37 +97,6 @@ async function submitForm() {
   margin-bottom: 0.5rem;
 }
 
-.create-book input,
-.create-book select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.create-book button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: var(--color-cyan-azure);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.create-book button:hover {
-  background-color: var(--color-ucla-blue);
-}
-
-.error-message {
-  font-size: 14px;
-  color: #cc0202;
-}
-
-.success-message {
-  font-size: 13px;
-  color: green;
-}
 @media (min-width: 1024px) {
   .create-book {
     width: 50%;

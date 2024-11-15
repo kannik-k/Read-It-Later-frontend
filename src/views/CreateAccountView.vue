@@ -49,6 +49,7 @@ async function submitForm() {
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <button type="submit">Create account</button>
   </form>
+  <p>Already have an account?<router-link to="/login">Log in</router-link></p>
 </div>
 </template>
 
@@ -95,9 +96,8 @@ async function submitForm() {
   background-color: var(--color-ucla-blue);
 }
 
-.error-message {
-  font-size: 13px;
-  color: red;
+router-link {
+  color: var(--color-air-superiority-blue);
 }
 @media (min-width: 1024px) {
 .login-form {
