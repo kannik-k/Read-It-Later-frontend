@@ -3,7 +3,7 @@ import {reactive, ref} from 'vue';
 import axios from 'axios';
 
 // Define the user object
-const user = ref({ username: '', password: '', email: ''});
+const user = ref({ username: '', password: '', passwordAgain: '', email: ''});
 const errorMessage = ref('');
 
 // Define the submit function
@@ -26,6 +26,7 @@ async function submitForm() {
   // Reset form after submission if needed
   user.username = '';
   user.password = '';
+  user.passwordAgain = '';
   user.email = '';
 }
 </script>
@@ -45,6 +46,10 @@ async function submitForm() {
     <div>
       <label for="password">Password</label>
       <input type="text" id="password" v-model="user.password" required>
+    </div>
+    <div>
+      <label for="passwordAgain">Password Again</label>
+      <input type="text" id="password" v-model="user.passwordAgain" required>
     </div>
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <button type="submit">Create account</button>
