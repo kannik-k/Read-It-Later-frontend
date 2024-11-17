@@ -39,6 +39,26 @@ function performSearch() {
 
   console.log(`Otsid ${searchType.value} järgi: "${query.value}"`);
   // Lisa siia otsinguloogika (nt API päring või filtreerimine)
+
+  const searchQuery = {};
+
+  if (searchType.value === 'author' && searchValue) {
+    searchQuery.author = searchValue;
+  } else if (searchType.value === 'title' && searchValue) {
+    searchQuery.title = searchValue;
+  }
+
+  books.value = [];
+
+  axios.get('/api/book', { params: searchQuery })
+      .then(response => {
+        if (response.data.length > 0) {
+          books.value = response.data;
+        }
+      })
+      .catch(error => {
+        errorMessage.value = 'An error occurred during the search: ' + (error.response?.data || error.message);
+      });
 }
 
 
@@ -111,6 +131,7 @@ function redirectToCreateBook() {
     </ul>
   </aside>
 
+  <!-- Search bar -->
   <main class="main-content">
     <div class="search-container">
       <div>Search by:</div>
@@ -141,6 +162,8 @@ function redirectToCreateBook() {
         <button class="search-button" @click="performSearch">SEARCH</button>
       </div>
     </div>
+
+    <!-- Add books function -->
     <div class="books">
       <button type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
       <h2>Books</h2>
