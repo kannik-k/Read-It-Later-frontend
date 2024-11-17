@@ -58,3 +58,30 @@ input, select {
     width: 100%;
   }
 }
+
+/* katsetus */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem auto;
+}
+
+thead th {
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+tbody td {
+  color: black;
+  padding: 1rem;
+  border: 1px solid var(--color-pink-lavender);
+  text-align: center;
+}
+
+.books .no-books-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

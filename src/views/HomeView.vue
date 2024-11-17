@@ -16,7 +16,7 @@ const getBooks = async () => {
       id: book.id,
       title: book.title,
       author: book.author,
-      genreId: book.genre,
+      genre: book.genre,  //siin peab olema genre mitte genreId
     }));
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the books';
@@ -49,18 +49,36 @@ const selectedGenre = ref(null);
 const getGenres = async () => {
   try {
     const response = await axios.get('/api/genre');
-    genres.value = response.data.map(genre => ({
+    genres.value = [{ genreId: null, genre: "All genres" }, ...response.data.map(genre => ({
       genreId: genre.genreId,
       genre: genre.genre,
-    }));
+    }))];
+    selectedGenre.value = genres.value[0];
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the genres';
   }
 };
+
 // Function to handle genre selection
 function filterByGenre(genre) {
   selectedGenre.value = genre;
-  // Add logic to filter results based on the genre here
+  const genreId = selectedGenre.value.genreId;
+
+  console.log("Valitud žanr:", selectedGenre.value);  // näitab tulemuse browseri konsoolis
+  console.log("Žanri ID (mugavuse huvides):", JSON.parse(JSON.stringify(selectedGenre.value)).genreId);
+
+  if (genreId === null) {
+    getBooks();
+  } else {
+    axios.get(`/api/book/searchByGenre/${genreId}`)
+        .then(response => {
+          console.log('Leiti raamatud žanri järgi:', response.data);
+          books.value = response.data;  // see uuendab kuvatavat book tabelit
+        })
+        .catch(error => {
+          console.error('Viga raamatute leidmisel:', error);
+        });
+  }
 }
 
 // Call getBooks and getGenres when the component is mounted
@@ -126,7 +144,7 @@ function redirectToCreateBook() {
     <div class="books">
       <button type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
       <h2>Books</h2>
-      <table v-if="books.length" aria-label="Books">
+      <table v-if="books.length" class="book-table" aria-label="Books">
         <thead>
         <tr>
           <th>Title</th>
@@ -142,7 +160,7 @@ function redirectToCreateBook() {
         </tr>
         </tbody>
       </table>
-      <p v-else>There are no books yet</p>
+      <p v-else class="no-books-message">There are no books yet</p>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </main>
