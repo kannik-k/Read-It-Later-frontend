@@ -7,6 +7,13 @@ import { useRouter } from 'vue-router';
 const books = ref([]);
 const errorMessage = ref(null);
 const genres = ref([]);
+const selectedGenreId = ref(null);
+
+const lastSearchQuery = ref({
+  genreId: null,
+  title: null,
+  author: null,
+});
 
 // Fetch books and genres
 const getBooks = async () => {
@@ -31,33 +38,41 @@ const query = ref('');
 
 // Otsingu teostamise funktsioon
 function performSearch() {
-  const searchValue = (query.value || '').trim(); // Veendu, et trim töötab
-  if (!searchValue) {
-    alert('Please fill out this field!');
+  const searchValue = (query.value || '').trim(); // Kasutaja sisestatud otsing
+
+  /*
+  if (!searchValue && selectedGenreId.value == null) {
+    alert('Please fill out this field or select a genre!');
     return;
-  }
+  }*/
 
-  console.log(`Otsid ${searchType.value} järgi: "${query.value}"`);
-  // Lisa siia otsinguloogika (nt API päring või filtreerimine)
-
-  const searchQuery = {};
-
-  if (searchType.value === 'author' && searchValue) {
-    searchQuery.author = searchValue;
+  if (!searchValue) {
+    lastSearchQuery.value.title = null;
+    lastSearchQuery.value.author = null;
   } else if (searchType.value === 'title' && searchValue) {
-    searchQuery.title = searchValue;
+    lastSearchQuery.value.title = searchValue;
+    lastSearchQuery.value.author = null;
+  } else if (searchType.value === 'author' && searchValue) {
+    lastSearchQuery.value.author = searchValue;
+    lastSearchQuery.value.title = null;
   }
 
-  books.value = [];
+  lastSearchQuery.value.genreId = selectedGenreId.value;
 
-  axios.get('/api/book', { params: searchQuery })
+  /*
+  if (!lastSearchQuery.value.title && !lastSearchQuery.value.author && !lastSearchQuery.value.genreId) {
+    alert('Please fill out a search field or select a genre!');
+    return;
+  }*/
+
+  axios
+      .get('/api/book', { params: lastSearchQuery.value })
       .then(response => {
-        if (response.data.length > 0) {
-          books.value = response.data;
-        }
+        books.value = response.data.length > 0 ? response.data : [];
       })
       .catch(error => {
-        errorMessage.value = 'An error occurred during the search: ' + (error.response?.data || error.message);
+        errorMessage.value =
+            'An error occurred during the search: ' + (error.response?.data || error.message);
       });
 }
 
@@ -79,26 +94,12 @@ const getGenres = async () => {
   }
 };
 
-// Function to handle genre selection
+// Function to handle genre selection with sidebar
 function filterByGenre(genre) {
   selectedGenre.value = genre;
-  const genreId = selectedGenre.value.genreId;
-
-  console.log("Valitud žanr:", selectedGenre.value);  // näitab tulemuse browseri konsoolis
-  console.log("Žanri ID (mugavuse huvides):", JSON.parse(JSON.stringify(selectedGenre.value)).genreId);
-
-  if (genreId === null) {
-    getBooks();
-  } else {
-    axios.get(`/api/book/searchByGenre/${genreId}`)
-        .then(response => {
-          console.log('Leiti raamatud žanri järgi:', response.data);
-          books.value = response.data;  // see uuendab kuvatavat book tabelit
-        })
-        .catch(error => {
-          console.error('Viga raamatute leidmisel:', error);
-        });
-  }
+  selectedGenreId.value = genre.genreId;
+  lastSearchQuery.value.genreId = genre.genreId;
+  performSearch()
 }
 
 // Call getBooks and getGenres when the component is mounted
