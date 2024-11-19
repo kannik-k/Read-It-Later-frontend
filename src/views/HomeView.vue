@@ -40,12 +40,6 @@ const query = ref('');
 function performSearch() {
   const searchValue = (query.value || '').trim(); // Kasutaja sisestatud otsing
 
-  /*
-  if (!searchValue && selectedGenreId.value == null) {
-    alert('Please fill out this field or select a genre!');
-    return;
-  }*/
-
   if (!searchValue) {
     lastSearchQuery.value.title = null;
     lastSearchQuery.value.author = null;
@@ -58,12 +52,6 @@ function performSearch() {
   }
 
   lastSearchQuery.value.genreId = selectedGenreId.value;
-
-  /*
-  if (!lastSearchQuery.value.title && !lastSearchQuery.value.author && !lastSearchQuery.value.genreId) {
-    alert('Please fill out a search field or select a genre!');
-    return;
-  }*/
 
   axios
       .get('/api/book', { params: lastSearchQuery.value })
