@@ -7,6 +7,13 @@ import { useRouter } from 'vue-router';
 const books = ref([]);
 const errorMessage = ref(null);
 const genres = ref([]);
+const selectedGenreId = ref(null);
+
+const lastSearchQuery = ref({
+  genreId: null,
+  title: null,
+  author: null,
+});
 
 // Fetch books and genres
 const getBooks = async () => {
@@ -16,7 +23,7 @@ const getBooks = async () => {
       id: book.id,
       title: book.title,
       author: book.author,
-      genreId: book.genre,
+      genre: book.genre,  //siin peab olema genre mitte genreId
     }));
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the books';
@@ -31,14 +38,30 @@ const query = ref('');
 
 // Otsingu teostamise funktsioon
 function performSearch() {
-  const searchValue = (query.value || '').trim(); // Veendu, et trim töötab
+  const searchValue = (query.value || '').trim(); // Kasutaja sisestatud otsing
+
   if (!searchValue) {
-    alert('Please fill out this field!');
-    return;
+    lastSearchQuery.value.title = null;
+    lastSearchQuery.value.author = null;
+  } else if (searchType.value === 'title' && searchValue) {
+    lastSearchQuery.value.title = searchValue;
+    lastSearchQuery.value.author = null;
+  } else if (searchType.value === 'author' && searchValue) {
+    lastSearchQuery.value.author = searchValue;
+    lastSearchQuery.value.title = null;
   }
 
-  console.log(`Otsid ${searchType.value} järgi: "${query.value}"`);
-  // Lisa siia otsinguloogika (nt API päring või filtreerimine)
+  lastSearchQuery.value.genreId = selectedGenreId.value;
+
+  axios
+      .get('/api/book', { params: lastSearchQuery.value })
+      .then(response => {
+        books.value = response.data.length > 0 ? response.data : [];
+      })
+      .catch(error => {
+        errorMessage.value =
+            'An error occurred during the search: ' + (error.response?.data || error.message);
+      });
 }
 
 
@@ -49,18 +72,22 @@ const selectedGenre = ref(null);
 const getGenres = async () => {
   try {
     const response = await axios.get('/api/genre');
-    genres.value = response.data.map(genre => ({
+    genres.value = [{ genreId: null, genre: "All genres" }, ...response.data.map(genre => ({
       genreId: genre.genreId,
       genre: genre.genre,
-    }));
+    }))];
+    selectedGenre.value = genres.value[0];
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the genres';
   }
 };
-// Function to handle genre selection
+
+// Function to handle genre selection with sidebar
 function filterByGenre(genre) {
   selectedGenre.value = genre;
-  // Add logic to filter results based on the genre here
+  selectedGenreId.value = genre.genreId;
+  lastSearchQuery.value.genreId = genre.genreId;
+  performSearch()
 }
 
 // Call getBooks and getGenres when the component is mounted
@@ -93,6 +120,7 @@ function redirectToCreateBook() {
     </ul>
   </aside>
 
+  <!-- Search bar -->
   <main class="main-content">
     <div class="search-container">
       <div>Search by:</div>
@@ -123,10 +151,12 @@ function redirectToCreateBook() {
         <button class="search-button" @click="performSearch">SEARCH</button>
       </div>
     </div>
+
+    <!-- Add books function -->
     <div class="books">
       <button type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
       <h2>Books</h2>
-      <table v-if="books.length" aria-label="Books">
+      <table v-if="books.length" class="book-table" aria-label="Books">
         <thead>
         <tr>
           <th>Title</th>
@@ -142,7 +172,7 @@ function redirectToCreateBook() {
         </tr>
         </tbody>
       </table>
-      <p v-else>There are no books yet</p>
+      <p v-else class="no-books-message">There are no books yet</p>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </main>
