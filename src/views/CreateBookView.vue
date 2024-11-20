@@ -30,7 +30,7 @@ async function submitForm() {
     book.value = { title: '', author: '', genreId: '' };
   } catch (error) {
     // Handle errors
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       errorMessage.value = error.response.data.message || 'An error occurred';
     } else {
       errorMessage.value = 'Network error, please try again later.';

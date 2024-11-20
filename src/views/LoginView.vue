@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import {reactive, ref} from 'vue';
 import axios from "axios";
 import router from "@/router/index.js";

@@ -1,6 +1,7 @@
 <script setup>
-import {reactive, ref} from 'vue';
+import {ref} from 'vue';
 import axios from 'axios';
+import router from "@/router/index.js";
 
 // Define the user object
 const user = ref({ username: '', password: '', passwordAgain: '', email: ''});
@@ -13,9 +14,14 @@ async function submitForm() {
     const response = await axios.post('/api/public/user', user.value);
     console.log("Response from server:", response.data);
 
-    // Handle successful login here, e.g., store token, redirect, etc.
+    const token = response.data.token;
+    localStorage.setItem('user-token', token);
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+    await router.push('/')
+    location.reload();
+
   } catch (error) {
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       // Access the error message from the backend response
       errorMessage.value = error.response.data.message || 'An error occurred';
     } else {
