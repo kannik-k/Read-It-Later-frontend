@@ -20,7 +20,7 @@ const getBooks = async () => {
   try {
     const response = await axios.get('/api/public/book');
     books.value = response.data.map(book => ({
-      id: book.id,
+      bookId: book.bookId,
       title: book.title,
       author: book.author,
       genre: book.genre,  //siin peab olema genre mitte genreId
@@ -100,6 +100,10 @@ const router = useRouter();
 function redirectToCreateBook() {
   router.push('/create_book');  // Redirect to /create_book
 }
+
+function redirectToBookDetails(bookId) {
+  router.push(`/book/${bookId}`);
+}
 </script>
 
 <template>
@@ -165,7 +169,11 @@ function redirectToCreateBook() {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="book in books" :key="book.id">
+        <tr class="book-row"
+            v-for="book in books"
+            :key="book.bookId"
+            @click="redirectToBookDetails(book.bookId)"
+            style="cursor: pointer;">
           <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
           <td>{{ book.genre }}</td>
@@ -308,6 +316,14 @@ function redirectToCreateBook() {
 .books label {
   display: block;
   margin-bottom: 0.5rem;
+}
+
+.book-row{
+  transition: background-color 0.3s ease;
+}
+
+.book-row:hover {
+  background-color: var(--color-pink-lavender-darker);
 }
 @media (min-width: 1024px) {
   .search-container {
