@@ -7,6 +7,11 @@ import axios from 'axios'
 
 const app = createApp(App)
 
+const token = localStorage.getItem('user-token');
+if (token) {
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+}
+
 app.provide('axios', axios)
 
 app.use(router)

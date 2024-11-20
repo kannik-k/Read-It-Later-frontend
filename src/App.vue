@@ -1,6 +1,19 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import {ref} from 'vue';
+import router from "@/router/index.js";
+
+const authenticated = ref(() => {
+  const token = localStorage.getItem('user-token');
+  return !(!token); // boolean if token exists
+});
+
+async function logOut() {
+  localStorage.removeItem('user-token');
+  await router.push('/')
+  location.reload();
+}
 
 </script>
 
@@ -15,8 +28,9 @@ import HelloWorld from './components/HelloWorld.vue'
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/recommended">Recommended</RouterLink>
       <RouterLink to="/wishlist">Wishlist</RouterLink>
-      <RouterLink to="/create_account">Create Account</RouterLink>
+      <RouterLink v-if="!authenticated()" to="/create_account">Create Account</RouterLink>
       <RouterLink to="/about">About</RouterLink>
+      <RouterLink v-if="authenticated()" @click="logOut" to="/">Log Out</RouterLink>
     </nav>
   </header>
 

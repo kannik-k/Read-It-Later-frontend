@@ -1,21 +1,43 @@
 <script setup>
-import { reactive } from 'vue';
+import { RouterLink } from 'vue-router'
+import {reactive, ref} from 'vue';
+import axios from "axios";
+import router from "@/router/index.js";
 
 // Define the user object
 const user = reactive({
-  name: '',
+  username: '',
   password: '',
 });
+const errorMessage = ref('');
 
 // Define the submit function
-function submitForm() {
+async function submitForm() {
+  errorMessage.value = '';
 
-  // Handle form submission logic here
-  // For example, you could log the user object or make an API call
-  console.log("Submitted user data:", user);
+  try {
+    const response = await axios.post('/api/public/user/login', user);
+    console.log("Submitted user data:", user);
+    console.log("Response from server:", response.data);
+
+    const token = response.data.token;
+    localStorage.setItem('user-token', token);
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+    await router.push('/')
+    location.reload();
+
+  } catch (error) {
+    if (error.response?.data) {
+      // Access the error message from the backend response
+      errorMessage.value = error.response.data.message || 'An error occurred';
+    } else {
+      // Handle other errors, like network issues
+      errorMessage.value = 'Network error, please try again later.';
+    }
+  }
 
   // Reset form after submission if needed
-  user.name = '';
+  user.username = '';
   user.password = '';
 }
 </script>
@@ -26,12 +48,13 @@ function submitForm() {
   <form @submit.prevent="submitForm">
     <div>
       <label for="username">Username</label>
-      <input type="text" id="username" v-model="user.name" required>
+      <input type="text" id="username" v-model="user.username" required>
     </div>
     <div>
       <label for="password">Password</label>
       <input type="text" id="password" v-model="user.password" required>
     </div>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <button type="submit">Log in</button>
   </form>
   <p>Don't have an account?<router-link to="/create_account">Create account</router-link></p>

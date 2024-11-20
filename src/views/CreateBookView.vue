@@ -11,7 +11,7 @@ const errorMessage = ref('');
 // Fetch the list of genres from the backend
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/genre'); // Fetch genres from your API
+    const response = await axios.get('/api/public/genre'); // Fetch genres from your API
     genres.value = response.data; // Assuming response contains an array of genres
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Failed to load genres.';
@@ -30,7 +30,7 @@ async function submitForm() {
     book.value = { title: '', author: '', genreId: '' };
   } catch (error) {
     // Handle errors
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       errorMessage.value = error.response.data.message || 'An error occurred';
     } else {
       errorMessage.value = 'Network error, please try again later.';
