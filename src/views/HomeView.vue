@@ -18,7 +18,7 @@ const lastSearchQuery = ref({
 // Fetch books and genres
 const getBooks = async () => {
   try {
-    const response = await axios.get('/api/book');
+    const response = await axios.get('/api/public/book');
     books.value = response.data.map(book => ({
       id: book.id,
       title: book.title,
@@ -54,7 +54,7 @@ function performSearch() {
   lastSearchQuery.value.genreId = selectedGenreId.value;
 
   axios
-      .get('/api/book', { params: lastSearchQuery.value })
+      .get('/api/public/book', { params: lastSearchQuery.value })
       .then(response => {
         books.value = response.data.length > 0 ? response.data : [];
       })
@@ -71,7 +71,7 @@ const selectedGenre = ref(null);
 // Fetch the list of genres from the backend
 const getGenres = async () => {
   try {
-    const response = await axios.get('/api/genre');
+    const response = await axios.get('/api/public/genre');
     genres.value = [{ genreId: null, genre: "All genres" }, ...response.data.map(genre => ({
       genreId: genre.genreId,
       genre: genre.genre,
