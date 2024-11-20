@@ -23,7 +23,7 @@ async function submitForm() {
   errorMessage.value = '';
   try {
     // Send the book data, including the genre ID
-    const response = await axios.post('/api/public/book', book.value);
+    const response = await axios.post('/api/book', book.value);
     console.log("Response from server:", response.data);
 
     // Reset the form
