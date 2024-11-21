@@ -11,6 +11,11 @@ const errorMessage = ref(null);
 const genres = ref([]);
 const selectedGenreId = ref(null);
 
+// Pagination variables
+const currentPage = ref(0);
+const pageSize = ref(10);
+const hasNextPage = ref(false);
+
 const lastSearchQuery = ref({
   genreId: null,
   title: null,
@@ -20,17 +25,27 @@ const lastSearchQuery = ref({
 // Fetch books and genres
 const getBooks = async () => {
   try {
-    const response = await axios.get('/api/public/book');
-    books.value = response.data.map(book => ({
-      bookId: book.bookId,
-      title: book.title,
-      author: book.author,
-      genre: book.genre,
-    }));
+    const params = {
+      genreId: lastSearchQuery.value.genreId,
+      title: lastSearchQuery.value.title,
+      author: lastSearchQuery.value.author,
+      page: currentPage.value,
+      size: pageSize.value,
+    };
+
+    const response = await axios.get('/api/public/book', { params });
+
+    books.value = response.data.books && response.data.books.length > 0
+        ? response.data.books
+        : [];
+
+    hasNextPage.value = response.data.hasNextPage || false;
+
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the books';
   }
 };
+
 
 // Valitud otsingutüüp (vaikimisi title)
 const searchType = ref('title');
@@ -54,18 +69,23 @@ function performSearch() {
   }
 
   lastSearchQuery.value.genreId = selectedGenreId.value;
-
-  axios
-      .get('/api/public/book', { params: lastSearchQuery.value })
-      .then(response => {
-        books.value = response.data.length > 0 ? response.data : [];
-      })
-      .catch(error => {
-        errorMessage.value =
-            'An error occurred during the search: ' + (error.response?.data || error.message);
-      });
+  currentPage.value = 0;
+  getBooks();
 }
 
+function goToNextPage() {
+  if (hasNextPage.value) {
+    currentPage.value++;
+    getBooks();
+  }
+}
+
+function goToPreviousPage() {
+  if (currentPage.value > 0) {
+    currentPage.value--;
+    getBooks();
+  }
+}
 
 // Selected genre
 const selectedGenre = ref(null);
@@ -89,7 +109,8 @@ function filterByGenre(genre) {
   selectedGenre.value = genre;
   selectedGenreId.value = genre.genreId;
   lastSearchQuery.value.genreId = genre.genreId;
-  performSearch()
+  currentPage.value = 0;
+  getBooks()
 }
 
 // Call getBooks and getGenres when the component is mounted
@@ -100,7 +121,7 @@ onMounted(() => {
 
 const router = useRouter();
 function redirectToCreateBook() {
-  router.push('/create_book');
+  router.push('/create_book');  // Redirect to /create_book
 }
 
 function redirectToBookDetails(bookId) {
@@ -184,6 +205,13 @@ function redirectToBookDetails(bookId) {
       </table>
       <p v-else class="no-books-message">There are no books yet</p>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button :disabled="currentPage === 0" @click="goToPreviousPage">Previous</button>
+      <span class="page-number">Page {{ currentPage + 1 }}</span>
+      <button :disabled="!hasNextPage" @click="goToNextPage">Next</button>
     </div>
   </main>
   </div>
@@ -313,6 +341,20 @@ function redirectToBookDetails(bookId) {
 
 .books div {
   margin-bottom: 1rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Space between elements */
+  margin-top: 1rem;
+}
+
+.page-number {
+  display: inline-block;
+  margin: 0 10px;
+  text-align: center;
 }
 
 .books label {
