@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router'
 import {reactive, ref} from 'vue';
 import axios from "axios";
 import router from "@/router/index.js";
+import { getUserId } from '../utils/auth';
 
 // Define the user object
 const user = reactive({
