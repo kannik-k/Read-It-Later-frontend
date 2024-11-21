@@ -19,7 +19,7 @@ const errorMessage = ref(null);
 const fetchBookDetails = async () => {
   bookLoading.value = true;
   try {
-    const response = await axios.get(`/api/public/book/searchById/${bookId}`);
+    const response = await axios.get(`/api/public/book/search_by_id/${bookId}`);
     book.value = response.data;
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the book details';
