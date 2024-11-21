@@ -5,7 +5,7 @@ stages:
 
 variables:
   DOCKER_REGISTRY: docker.io
-  DOCKER_IMAGE: iti0302-2024-frontend
+  DOCKER_IMAGE: aetkadi/iti0302-2024-frontend
 
 build:
   stage: build
@@ -46,7 +46,7 @@ deploy:
     - chmod 700 ~/.ssh
   script:
     - ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "
-      cd /opt/iti0302/backend &&
+      cd /home/ubuntu/iti0302/backend &&
       docker-compose pull &&
-      docker-compose down &&
+      docker-compose down --remove-orphans &&
       docker-compose up -d"
