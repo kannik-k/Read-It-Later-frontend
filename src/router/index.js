@@ -5,6 +5,9 @@ import CreateAccountView from "@/views/CreateAccountView.vue";
 import CreateBookView from "@/views/CreateBookView.vue";
 import WishList from "@/views/WishList.vue";
 import Recommended from "@/views/Recommended.vue";
+import Profile from "@/views/Profile.vue";
+import ReviewView from "@/views/ReviewView.vue";
+import CreateReviewView from "@/views/CreateReviewView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +49,23 @@ const router = createRouter({
       path: '/recommended',
       name: 'recommended',
       component: Recommended
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile
+    },
+    {
+      path: '/book/:id',
+      name: 'review',
+      component: ReviewView,
+      props: true
+    },
+    {
+      path: '/book/:id/add',
+      name: 'add_review',
+      component:CreateReviewView,
+      props: true
     }
   ]
 })

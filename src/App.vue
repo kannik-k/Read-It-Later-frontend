@@ -30,6 +30,7 @@ async function logOut() {
       <RouterLink to="/wishlist">Wishlist</RouterLink>
       <RouterLink v-if="!authenticated()" to="/create_account">Create Account</RouterLink>
       <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/profile">Profile</RouterLink>
       <RouterLink v-if="authenticated()" @click="logOut" to="/">Log Out</RouterLink>
     </nav>
   </header>
