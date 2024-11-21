@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { getUserId, token } from '../utils/auth';
+
 
 // Define reactive variables
 const books = ref([]);
@@ -23,7 +25,7 @@ const getBooks = async () => {
       bookId: book.bookId,
       title: book.title,
       author: book.author,
-      genre: book.genre,  //siin peab olema genre mitte genreId
+      genre: book.genre,
     }));
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the books';
@@ -98,7 +100,7 @@ onMounted(() => {
 
 const router = useRouter();
 function redirectToCreateBook() {
-  router.push('/create_book');  // Redirect to /create_book
+  router.push('/create_book');
 }
 
 function redirectToBookDetails(bookId) {
@@ -158,7 +160,7 @@ function redirectToBookDetails(bookId) {
 
     <!-- Add books function -->
     <div class="books">
-      <button type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
+      <button v-if="!!token" type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
       <h2>Books</h2>
       <table v-if="books.length" class="book-table" aria-label="Books">
         <thead>

@@ -1,6 +1,7 @@
 import {jwtDecode} from "jwt-decode";
+import router from "@/router/index.js";
 
-const token = localStorage.getItem("user-token")
+export const token = localStorage.getItem("user-token")
 
 export function getUserId() {
     if (token) {
@@ -16,4 +17,10 @@ export function getTokenExpirationTime() {
         return decodedToken.exp * 1000;  // Multiply with 1000 to make number comparable with current time
     }
     return null;
+}
+
+export async function logOut() {
+    localStorage.removeItem('user-token');
+    await router.push('/')
+    location.reload();
 }

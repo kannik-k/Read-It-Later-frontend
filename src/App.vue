@@ -2,18 +2,11 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import {ref} from 'vue';
-import router from "@/router/index.js";
 
 const authenticated = ref(() => {
   const token = localStorage.getItem('user-token');
   return !(!token); // boolean if token exists
 });
-
-async function logOut() {
-  localStorage.removeItem('user-token');
-  await router.push('/')
-  location.reload();
-}
 
 </script>
 
@@ -26,12 +19,10 @@ async function logOut() {
 
     <nav>
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/recommended">Recommended</RouterLink>
-      <RouterLink to="/wishlist">Wishlist</RouterLink>
-      <RouterLink v-if="!authenticated()" to="/create_account">Create Account</RouterLink>
+      <RouterLink v-if="authenticated()" to="/recommended">Recommended</RouterLink>
+      <RouterLink v-if="authenticated()" to="/wishlist">Wishlist</RouterLink>
       <RouterLink to="/about">About</RouterLink>
       <RouterLink to="/profile">Profile</RouterLink>
-      <RouterLink v-if="authenticated()" @click="logOut" to="/">Log Out</RouterLink>
     </nav>
   </header>
 
@@ -67,14 +58,6 @@ nav {
   text-align: center;
   margin-top: 1rem;
   margin-bottom: 1vw;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-ucla-blue);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
 }
 
 nav a {
