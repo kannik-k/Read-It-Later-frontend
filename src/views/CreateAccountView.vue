@@ -51,11 +51,11 @@ async function submitForm() {
     </div>
     <div>
       <label for="password">Password</label>
-      <input type="text" id="password" v-model="user.password" required>
+      <input type="password" id="password" v-model="user.password" required>
     </div>
     <div>
       <label for="passwordAgain">Password Again</label>
-      <input type="text" id="password" v-model="user.passwordAgain" required>
+      <input type="password" id="password" v-model="user.passwordAgain" required>
     </div>
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <button type="submit">Create account</button>

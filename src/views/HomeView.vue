@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { getUserId, token } from '../utils/auth';
+
 
 // Define reactive variables
 const books = ref([]);
@@ -179,7 +181,7 @@ function redirectToBookDetails(bookId) {
 
     <!-- Add books function -->
     <div class="books">
-      <button type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
+      <button v-if="!!token" type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
       <h2>Books</h2>
       <table v-if="books.length" class="book-table" aria-label="Books">
         <thead>

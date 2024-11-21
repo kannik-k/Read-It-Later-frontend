@@ -3,7 +3,6 @@ import { RouterLink } from 'vue-router'
 import {reactive, ref} from 'vue';
 import axios from "axios";
 import router from "@/router/index.js";
-import { getUserId } from '../utils/auth';
 
 // Define the user object
 const user = reactive({
@@ -53,7 +52,7 @@ async function submitForm() {
     </div>
     <div>
       <label for="password">Password</label>
-      <input type="text" id="password" v-model="user.password" required>
+      <input type="password" id="password" v-model="user.password" required>
     </div>
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <button type="submit">Log in</button>

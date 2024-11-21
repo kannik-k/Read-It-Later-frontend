@@ -2,11 +2,13 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import { token } from '../utils/auth';
+
 
 const route = useRoute();
 const router = useRouter();
 
-const bookId = route.params.id; // Võtab marsruudi ID parameetri
+const bookId = route.params.id;
 
 const book = ref(null);
 const reviews = ref([]);
@@ -17,7 +19,7 @@ const errorMessage = ref(null);
 const fetchBookDetails = async () => {
   bookLoading.value = true;
   try {
-    const response = await axios.get(`/api/public/book/searchById/${bookId}`);
+    const response = await axios.get(`/api/public/book/search_by_id/${bookId}`);
     book.value = response.data;
   } catch (error) {
     errorMessage.value = error.response?.data || 'An error occurred while fetching the book details';
@@ -50,7 +52,7 @@ function redirectToCreateReview() {
 }
 
 function goBackHome() {
-  router.push('/'); // Viib kasutaja home lehele
+  router.push('/');
 }
 
 onMounted(() => {
@@ -61,7 +63,7 @@ onMounted(() => {
 
 <template>
   <div class="book-details">
-    <!-- Back Button -->
+
     <button class="back-button" @click="goBackHome">Back</button>
     <div class="book-data">
     <h1>Book Details</h1>
@@ -78,7 +80,7 @@ onMounted(() => {
 
     <div class="reviews">
       <h1>Reviews</h1>
-      <button class="review" @click="redirectToCreateReview">
+      <button v-if="!!token" class="review" @click="redirectToCreateReview">
         Add review
       </button>
       <div v-if="reviewsLoading">
@@ -102,7 +104,7 @@ onMounted(() => {
 .book-details {
   padding-left: 5%;
   padding-right: 5%;
-  position: relative; /* Tagab, et "Back" nuppu saab paigutada suhtelises positsioonis */
+  position: relative;
   align-items: center;
 }
 .book-data {
@@ -111,7 +113,7 @@ onMounted(() => {
 }
 
 
-/* Back Button */
+
 .back-button {
   top: 1rem;
   right: 1rem;
@@ -140,10 +142,10 @@ onMounted(() => {
 }
 
 .review-text {
-  max-width: 100%; /* Võimaldab arvustustel kasutada maksimaalset ruumi */
-  word-wrap: break-word; /* Murrab pikad sõnad */
-  overflow-wrap: break-word; /* Toetab pikemate sõnade murdmist */
-  white-space: normal; /* Tekstimurdmine lubatud */
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
   margin: 0.5rem 0;
 }
 </style>
