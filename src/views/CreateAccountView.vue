@@ -3,7 +3,7 @@ import {ref} from 'vue';
 import axios from 'axios';
 import router from "@/router/index.js";
 
-// Define the user object
+// Define the user object.
 const user = ref({ username: '', password: '', passwordAgain: '', email: ''});
 const errorMessage = ref('');
 
