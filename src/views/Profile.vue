@@ -26,7 +26,7 @@ async function fetchUserInfo() {
       email: user.value.email,
     };
   } catch (error) {
-    errorMessage.value = 'Failed to fetch user information.';
+    errorMessage.value = error.response?.data.message || 'Failed to fetch user information.';
   }
 }
 
@@ -41,7 +41,7 @@ async function fetchData() {
     const genresResponse = await axios.get('/api/public/genre');
     allGenres.value = genresResponse.data;
   } catch (error) {
-    errorMessage.value = 'Failed to fetch data.';
+    errorMessage.value = error.response?.data.message || 'Failed to fetch data.';
   }
 }
 
@@ -54,15 +54,15 @@ async function addGenre() {
 
   try {
     const userId = getUserId();
-    await axios.post(`/api/user_preferences`, {userId: getUserId(), genreId: selectedGenreId.value });
+    await axios.post(`/api/user_preferences`, {userId: userId, genreId: selectedGenreId.value });
 
     // Refresh user genres
-    const userGenresResponse = await axios.get(`/api/user_preferences/${getUserId()}`);
+    const userGenresResponse = await axios.get(`/api/user_preferences/${userId}`);
     userGenres.value = userGenresResponse.data;
 
     selectedGenreId.value = null; // Reset selection
   } catch (error) {
-    errorMessage.value = 'Failed to add genre.';
+    errorMessage.value = error.response?.data.message || 'Failed to add genre.';
   }
 }
 
@@ -72,13 +72,13 @@ async function removeGenre(genreId) {
 
   try {
     const userId = getUserId();
-    await axios.delete(`/api/user_preferences/${getUserId()}/${genreId}`);
+    await axios.delete(`/api/user_preferences/${userId}/${genreId}`);
 
     // Refresh user genres
     const userGenresResponse = await axios.get(`/api/user_preferences/${userId}`);
     userGenres.value = userGenresResponse.data;
   } catch (error) {
-    errorMessage.value = 'Failed to remove genre.';
+    errorMessage.value = error.response?.data.message || 'Failed to remove genre.';
   }
 }
 
@@ -108,7 +108,7 @@ async function updateField(field) {
     newPassword.value = null;
     confirmNewPassword.value = null;
   } catch (error) {
-    errorMessage.value = `Failed to update ${field}.`;
+    errorMessage.value = error.response?.data.message || `Failed to update ${field}.`;
   }
 }
 
@@ -138,7 +138,7 @@ async function deleteAccount() {
       alert('Account deleted successfully.');
       await logOut()
     } catch (error) {
-      errorMessage.value = 'Failed to delete account. Please try again.';
+      errorMessage.value = error.response?.data.message || 'Failed to delete account. Please try again.';
     }
   }
 }

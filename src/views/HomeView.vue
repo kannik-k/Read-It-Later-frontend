@@ -42,20 +42,20 @@ const getBooks = async () => {
     hasNextPage.value = response.data.hasNextPage || false;
 
   } catch (error) {
-    errorMessage.value = error.response?.data || 'An error occurred while fetching the books';
+    errorMessage.value = error.response?.data.message || 'An error occurred while fetching the books';
   }
 };
 
 
-// Valitud otsingutüüp (vaikimisi title)
+// Chosen search type (default: title)
 const searchType = ref('title');
 
-// Otsingu sisend
+// Search query
 const query = ref('');
 
-// Otsingu teostamise funktsioon
+// Function for performing search
 function performSearch() {
-  const searchValue = (query.value || '').trim(); // Kasutaja sisestatud otsing
+  const searchValue = (query.value || '').trim(); // Query entered by user
 
   if (!searchValue) {
     lastSearchQuery.value.title = null;
@@ -100,7 +100,7 @@ const getGenres = async () => {
     }))];
     selectedGenre.value = genres.value[0];
   } catch (error) {
-    errorMessage.value = error.response?.data || 'An error occurred while fetching the genres';
+    errorMessage.value = error.response?.data.message || 'An error occurred while fetching the genres';
   }
 };
 
@@ -111,6 +111,14 @@ function filterByGenre(genre) {
   lastSearchQuery.value.genreId = genre.genreId;
   currentPage.value = 0;
   getBooks()
+}
+
+async function addToWishList(bookId) {
+  try {
+    await axios.post(`/api/wish_list`, {userId: getUserId(), bookId: bookId});
+  } catch (error) {
+    errorMessage.value = error.response?.data.message || 'Failed to add to wishlist.';
+  }
 }
 
 // Call getBooks and getGenres when the component is mounted
@@ -189,6 +197,7 @@ function redirectToBookDetails(bookId) {
           <th>Title</th>
           <th>Author</th>
           <th>Genre</th>
+          <th v-if="!!token">Wishlist</th>
         </tr>
         </thead>
         <tbody>
@@ -200,6 +209,7 @@ function redirectToBookDetails(bookId) {
           <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
           <td>{{ book.genre }}</td>
+          <td v-if="!!token" @click.stop="addToWishList(book.bookId)"><button>+</button></td>
         </tr>
         </tbody>
       </table>
@@ -328,7 +338,7 @@ function redirectToBookDetails(bookId) {
 }
 
 .books {
-  max-width: 300px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 1rem;
   border: 1px solid var(--color-pink-lavender-darker);
