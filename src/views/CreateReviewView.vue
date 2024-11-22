@@ -9,7 +9,7 @@ const router = useRouter();
 const review = ref({ bookId: '', review: '' });
 const errorMessage = ref('');
 
-// Määra bookId, kui komponent on algväärtustatud
+// Define bookId
 onMounted(() => {
   if (route.params.id) {
     review.value.bookId = route.params.id;
@@ -18,18 +18,17 @@ onMounted(() => {
   }
 });
 
-// Vormiesituse funktsioon
+// Submit form
 async function submitForm() {
   errorMessage.value = '';
   try {
     const response = await axios.post('/api/review', review.value);
     console.log("Response from server:", response.data);
 
-    // Lähtesta ainult arvustuse tekst
     review.value.review = '';
     redirectToReviews()
   } catch (error) {
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       errorMessage.value = error.response.data.message || 'An error occurred';
     } else {
       errorMessage.value = 'Network error, please try again later.';
@@ -37,16 +36,16 @@ async function submitForm() {
   }
 }
 
-// Tekstiala automaatse suuruse muutmine
+// Change the textbox size
 function autoResize(event) {
   const textarea = event.target;
-  textarea.style.height = 'auto'; // Lähtesta kõrgus, et arvutamine toimiks
-  textarea.style.height = `${textarea.scrollHeight}px`; // Määra kõrgus vastavalt sisu kõrgusele
+  textarea.style.height = 'auto';
+  textarea.style.height = `${textarea.scrollHeight}px`;
 }
 
-// Cancel nupu funktsioon
+// Cancel button
 function redirectToReviews() {
-  router.push(`/book/${review.value.bookId}`); // Suuna tagasi arvustuste lehele
+  router.push(`/book/${review.value.bookId}`); // Redirect to reviews page
 }
 </script>
 
@@ -67,7 +66,6 @@ function redirectToReviews() {
       </div>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <button type="submit">Add Review</button>
-      <!-- Cancel nupp -->
       <button type="button" @click="redirectToReviews" class="cancel">Cancel</button>
     </form>
   </div>

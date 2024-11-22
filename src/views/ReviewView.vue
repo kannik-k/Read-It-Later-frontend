@@ -22,7 +22,7 @@ const fetchBookDetails = async () => {
     const response = await axios.get(`/api/public/book/search_by_id/${bookId}`);
     book.value = response.data;
   } catch (error) {
-    errorMessage.value = error.response?.data || 'An error occurred while fetching the book details';
+    errorMessage.value = error.response?.data.message || 'An error occurred while fetching the book details';
   } finally {
     bookLoading.value = false;
   }
@@ -37,7 +37,7 @@ const getReviews = async () => {
       review: review.review,
     }));
   } catch (error) {
-    errorMessage.value = error.response?.data || 'An error occurred while fetching the reviews';
+    errorMessage.value = error.response?.data.message || 'An error occurred while fetching the reviews';
   } finally {
     reviewsLoading.value = false;
   }

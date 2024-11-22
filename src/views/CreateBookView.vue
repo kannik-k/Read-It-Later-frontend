@@ -5,14 +5,14 @@ import axios from 'axios';
 // Define the book object and other reactive variables
 const book = ref({ title: '', author: '', genreId: '' });
 const genre = ref({genreId: '', genre: ''})
-const genres = ref([]); // Array to hold genres
+const genres = ref([]);
 const errorMessage = ref('');
 
 // Fetch the list of genres from the backend
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/public/genre'); // Fetch genres from your API
-    genres.value = response.data; // Assuming response contains an array of genres
+    const response = await axios.get('/api/public/genre');
+    genres.value = response.data;
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Failed to load genres.';
   }
@@ -31,7 +31,7 @@ async function submitForm() {
   } catch (error) {
     // Handle errors
     if (error.response?.data) {
-      errorMessage.value = error.response.data.message || 'An error occurred';
+      errorMessage.value = error.response?.data.message || 'An error occurred';
     } else {
       errorMessage.value = 'Network error, please try again later.';
     }
