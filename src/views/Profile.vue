@@ -234,7 +234,7 @@ onMounted(() => {
           <ul>
             <li v-for="genre in userGenres" :key="genre.genreId">
               {{ genre.genreId }}
-              <button @click="removeGenre(genre.genreId)">Remove</button>
+              <button class="remove-genre" @click="removeGenre(genre.genreId)">Remove</button>
             </li>
           </ul>
 
@@ -335,6 +335,10 @@ onMounted(() => {
   padding: 0.5rem;
   border: 1px solid var(--color-pink-lavender-darker);
   border-radius: 4px;
+}
+
+.remove-genre {
+  width: 7rem
 }
 
 .buttons {
