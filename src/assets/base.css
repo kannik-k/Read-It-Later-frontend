@@ -37,6 +37,13 @@
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
 
+  --color-space-cadet: var(--vt-c-space-cadet);
+  --color-ucla-blue: var(--vt-c-ucla-blue);
+  --color-pink-lavender: var(--vt-c-pink-lavender);
+  --color-pink-lavender-darker: var(--vt-c-pink-lavender-darker);
+  --color-cyan-azure: var(--vt-c-cyan-azure);
+  --color-air-superiority-blue: var(--vt-c-air-superiority-blue);
+
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
 
@@ -54,13 +61,6 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
-
-    --color-space-cadet: var(--vt-c-space-cadet);
-    --color-ucla-blue: var(--vt-c-ucla-blue);
-    --color-pink-lavender: var(--vt-c-pink-lavender);
-    --color-pink-lavender-darker: var(--vt-c-pink-lavender-darker);
-    --color-cyan-azure: var(--vt-c-cyan-azure);
-    --color-air-superiority-blue: var(--vt-c-air-superiority-blue);
   }
 }
 
