@@ -227,6 +227,7 @@ onMounted(() => {
             <button @click="cancelEdit">Cancel</button>
           </div>
         </div>
+      </div>
         <!-- Display User Genres -->
         <div class="genres">
           <h3>Preferred Genres</h3>
@@ -248,7 +249,7 @@ onMounted(() => {
             <button @click="addGenre">Add Genre</button>
           </div>
         </div>
-      </div>
+
 
       <div class="log-out">
         <button class="log-out-button" @click="logOut">Log out</button>
@@ -304,6 +305,7 @@ onMounted(() => {
 
 .genres {
   margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
 .genres h3 {
