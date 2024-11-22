@@ -11,6 +11,9 @@ const oldPassword = ref(null);
 const newPassword = ref(null);
 const confirmNewPassword = ref(null);
 const editingField = ref(null);
+const userGenres = ref([]); // Genres linked to the user
+const allGenres = ref([]); // All genres from the genres table
+const selectedGenreId = ref(null); // For adding a genre
 const errorMessage = ref(null);
 
 // Fetch user data
@@ -24,6 +27,58 @@ async function fetchUserInfo() {
     };
   } catch (error) {
     errorMessage.value = 'Failed to fetch user information.';
+  }
+}
+
+// Fetch user data, user preferences, and available genres
+async function fetchData() {
+  try {
+    // Fetch genres linked to the user
+    const userGenresResponse = await axios.get(`/api/user_preferences/${getUserId()}`);
+    userGenres.value = userGenresResponse.data;
+
+    // Fetch all available genres
+    const genresResponse = await axios.get('/api/public/genre');
+    allGenres.value = genresResponse.data;
+  } catch (error) {
+    errorMessage.value = 'Failed to fetch data.';
+  }
+}
+
+// Add a new genre preference for the user
+async function addGenre() {
+  if (!selectedGenreId.value) {
+    errorMessage.value = 'Please select a genre.';
+    return;
+  }
+
+  try {
+    const userId = getUserId();
+    await axios.post(`/api/user_preferences`, {userId: getUserId(), genreId: selectedGenreId.value });
+
+    // Refresh user genres
+    const userGenresResponse = await axios.get(`/api/user_preferences/${getUserId()}`);
+    userGenres.value = userGenresResponse.data;
+
+    selectedGenreId.value = null; // Reset selection
+  } catch (error) {
+    errorMessage.value = 'Failed to add genre.';
+  }
+}
+
+// Remove a genre preference
+async function removeGenre(genreId) {
+  if (!confirm('Are you sure you want to remove this genre?')) return;
+
+  try {
+    const userId = getUserId();
+    await axios.delete(`/api/user_preferences/${getUserId()}/${genreId}`);
+
+    // Refresh user genres
+    const userGenresResponse = await axios.get(`/api/user_preferences/${userId}`);
+    userGenres.value = userGenresResponse.data;
+  } catch (error) {
+    errorMessage.value = 'Failed to remove genre.';
   }
 }
 
@@ -99,7 +154,11 @@ function redirectToLogIn() {
 }
 
 // Fetch user information on component mount
-onMounted(fetchUserInfo);
+onMounted(() => {
+  fetchUserInfo();
+  fetchData()
+});
+
 </script>
 
 
@@ -168,6 +227,27 @@ onMounted(fetchUserInfo);
             <button @click="cancelEdit">Cancel</button>
           </div>
         </div>
+        <!-- Display User Genres -->
+        <div class="genres">
+          <h3>Preferred Genres</h3>
+          <ul>
+            <li v-for="genre in userGenres" :key="genre.genreId">
+              {{ genre.genreId }}
+              <button @click="removeGenre(genre.genreId)">Remove</button>
+            </li>
+          </ul>
+
+          <!-- Add Genre -->
+          <div class="add-genre">
+            <select v-model="selectedGenreId">
+              <option disabled value="">Select a genre</option>
+              <option v-for="genre in allGenres" :key="genre.genreId" :value="genre.genreId">
+                {{ genre.genre }}
+              </option>
+            </select>
+            <button @click="addGenre">Add Genre</button>
+          </div>
+        </div>
       </div>
 
       <div class="log-out">
@@ -221,6 +301,40 @@ onMounted(fetchUserInfo);
   border: 1px solid var(--color-pink-lavender-darker);
   border-radius: 4px;
 }
+
+.genres {
+  margin-top: 2rem;
+}
+
+.genres h3 {
+  margin-bottom: 1rem;
+}
+
+.genres ul {
+  list-style: none;
+  padding: 0;
+}
+
+.genres li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.add-genre {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.add-genre select {
+  flex-grow: 1;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--color-pink-lavender-darker);
+  border-radius: 4px;
+}
+
 .buttons {
   display: flex;
   flex-direction: row;
