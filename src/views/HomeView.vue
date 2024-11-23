@@ -330,7 +330,7 @@ function redirectToBookDetails(bookId) {
 }
 
 .search-options input[type="radio"] {
-  display: none; /* Peida radio nupud */
+  display: none; /* Hide radio buttons */
 }
 
 .search-button {
