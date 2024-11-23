@@ -291,11 +291,6 @@ function redirectToBookDetails(bookId) {
   margin: 0 auto 2vw auto;
 }
 
-.search-options {
-  display: flex;
-  gap: 15px;
-}
-
 .search-bar {
   display: flex;
   gap: 10px;
