@@ -4,7 +4,6 @@ import axios from 'axios';
 
 // Define the book object and other reactive variables
 const book = ref({ title: '', author: '', genreId: '' });
-const genre = ref({genreId: '', genre: ''})
 const genres = ref([]);
 const errorMessage = ref('');
 

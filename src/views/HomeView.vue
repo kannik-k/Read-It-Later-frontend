@@ -291,11 +291,6 @@ function redirectToBookDetails(bookId) {
   margin: 0 auto 2vw auto;
 }
 
-.search-options {
-  display: flex;
-  gap: 15px;
-}
-
 .search-bar {
   display: flex;
   gap: 10px;
@@ -330,7 +325,7 @@ function redirectToBookDetails(bookId) {
 }
 
 .search-options input[type="radio"] {
-  display: none; /* Peida radio nupud */
+  display: none; /* Hide radio buttons */
 }
 
 .search-button {

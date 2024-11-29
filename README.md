@@ -1,29 +1,32 @@
-# iti0302-2024-frontend
+# Read It Later
 
-This template should help get you started developing with Vue 3 in Vite.
+## Overview
 
-## Recommended IDE Setup
+This is a frontend application built with Vue.js. This README will guide you through the steps to .
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Project introduction
 
-## Customize configuration
+ReadItLater is a platform that allows users to create a personal wishlist of books they want to read in the future. Users can add books to the website for everyone to see and they can also add them to their wishlist. There’s an option to search for books by genre—by selecting a genre, users can view books belonging to it. Books can also be searched by author or title. Clicking on a book allows users to see available reviews for that book. Users can set their favorite genres, which are used to provide personalized book recommendations. Each recommendation also includes the option to view reviews related to the book.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Prerequisites
 
-## Project Setup
+Before you begin, ensure you have met the following requirements:
 
-```sh
+- NodeJS
+- NPM
+
+## Running the project
+
+First run your backend project. To run the frontend project, enter the following commands:
+
+```
 npm install
 ```
-
-### Compile and Hot-Reload for Development
-
-```sh
+```
+npm run build
+```
+```
 npm run dev
 ```
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+You can view the project at http://localhost:5173/.
