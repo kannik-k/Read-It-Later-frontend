@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { getUserId } from '@/utils/auth.js';
 
 // Define the book object and other reactive variables
 const book = ref({ title: '', author: '', genreId: '' });
+const addToWishlistChecked = ref(false); // Track whether the wishlist checkbox is selected
 const genres = ref([]);
 const errorMessage = ref('');
 
@@ -23,10 +25,16 @@ async function submitForm() {
   try {
     // Send the book data, including the genre ID
     const response = await axios.post('/api/book', book.value);
-    console.log("Response from server:", response.data);
+    console.log('Response from server:', response.data);
 
-    // Reset the form
+    // If the "Add to Wishlist" checkbox is checked, add the book to the wishlist
+    if (addToWishlistChecked.value) {
+      await addToWishList(response.data.bookId);
+    }
+
+    // Reset the form and checkbox
     book.value = { title: '', author: '', genreId: '' };
+    addToWishlistChecked.value = false;
   } catch (error) {
     // Handle errors
     if (error.response?.data) {
@@ -36,7 +44,16 @@ async function submitForm() {
     }
   }
 }
+
+async function addToWishList(bookId) {
+  try {
+    await axios.post('/api/wish_list', { userId: getUserId(), bookId });
+  } catch (error) {
+    errorMessage.value = error.response?.data.message || 'Failed to add to wishlist.';
+  }
+}
 </script>
+
 
 <template>
   <div class="create-book">
@@ -44,12 +61,12 @@ async function submitForm() {
     <form @submit.prevent="submitForm">
       <div>
         <label for="title">Title</label>
-        <input type="text" id="title" v-model="book.title" required>
+        <input type="text" id="title" v-model="book.title" required />
       </div>
 
       <div>
         <label for="author">Author</label>
-        <input type="text" id="author" v-model="book.author" required>
+        <input type="text" id="author" v-model="book.author" required />
       </div>
 
       <div>
@@ -58,9 +75,20 @@ async function submitForm() {
         <select id="genreId" v-model="book.genreId" required>
           <option disabled value="">Please select a genre</option>
           <option v-for="genre in genres" :key="genre.genreId" :value="genre.genreId">
-            {{genre.genre}}
+            {{ genre.genre }}
           </option>
         </select>
+      </div>
+
+      <!-- Checkbox for "Add to Wishlist" -->
+      <div class="checkbox-container">
+        <label for="wishlistCheckbox">Add this book to my wishlist</label>
+
+        <input
+            type="checkbox"
+            id="wishlistCheckbox"
+            v-model="addToWishlistChecked"
+        />
       </div>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -69,6 +97,7 @@ async function submitForm() {
     </form>
   </div>
 </template>
+
 
 <style scoped>
 .create-book {
@@ -90,6 +119,20 @@ async function submitForm() {
 .create-book label {
   display: block;
   margin-bottom: 0.5rem;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container label {
+  display: flex;
+}
+
+.checkbox-container input#wishlistCheckbox {
+  display: flex;
+  width: 2rem;
 }
 
 @media (min-width: 1024px) {
