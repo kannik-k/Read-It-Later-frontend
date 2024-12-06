@@ -9,6 +9,9 @@ variables:
 
 build:
   stage: build
+  only:
+    refs:
+      - main
   image: node:latest
   script:
     - npm ci
