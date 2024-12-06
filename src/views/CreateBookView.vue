@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { getUserId } from '@/utils/auth.js';
+
+const router = useRouter();
 
 // Define the book object and other reactive variables
 const book = ref({ title: '', author: '', genreId: '' });
@@ -23,20 +26,18 @@ onMounted(async () => {
 async function submitForm() {
   errorMessage.value = '';
   try {
-    // Send the book data, including the genre ID
     const response = await axios.post('/api/book', book.value);
     console.log('Response from server:', response.data);
 
-    // If the "Add to Wishlist" checkbox is checked, add the book to the wishlist
     if (addToWishlistChecked.value) {
       await addToWishList(response.data.bookId);
     }
 
-    // Reset the form and checkbox
     book.value = { title: '', author: '', genreId: '' };
     addToWishlistChecked.value = false;
+
+    await router.push('/');
   } catch (error) {
-    // Handle errors
     if (error.response?.data) {
       errorMessage.value = error.response?.data.message || 'An error occurred';
     } else {
@@ -51,6 +52,10 @@ async function addToWishList(bookId) {
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'Failed to add to wishlist.';
   }
+}
+
+function goBack() {
+  router.back();
 }
 </script>
 
@@ -94,12 +99,23 @@ async function addToWishList(bookId) {
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <button type="submit">Add Book</button>
+      <button class="back-button" @click="goBack">Back</button>
     </form>
   </div>
 </template>
 
 
 <style scoped>
+.back-button {
+  margin-top: 1rem;
+  background-color: var(--color-pink-lavender-darker);
+  border: 1px solid var(--color-pink-lavender-darker);
+}
+
+.back-button:hover {
+  background-color: hsla(278, 100%, 34%, 0.2);
+}
+
 .create-book {
   max-width: 80%;
   margin: 0 auto;
