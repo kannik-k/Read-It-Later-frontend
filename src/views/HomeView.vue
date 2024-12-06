@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { getUserId, token } from '../utils/auth';
+import { token } from '../utils/auth';
 
 
 // Define reactive variables

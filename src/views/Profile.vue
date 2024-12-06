@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { getUserId, logOut, token } from '../utils/auth';
+import { logOut, token } from '../utils/auth';
 import router from "@/router/index.js";
 
 // Reactive variables for user data and error messages
-const user = ref({ userId: '', username: '', email: '' });
+const user = ref({ username: '', email: '' });
 const userForDisplay = ref({ username: '', email: '' });
 const oldPassword = ref(null);
 const newPassword = ref(null);
@@ -19,7 +19,7 @@ const errorMessage = ref(null);
 // Fetch user data
 async function fetchUserInfo() {
   try {
-    const response = await axios.get(`/api/user/${getUserId()}`);
+    const response = await axios.get(`/api/user`);
     user.value = response.data;
     userForDisplay.value = {
       username: user.value.username,
@@ -34,7 +34,7 @@ async function fetchUserInfo() {
 async function fetchData() {
   try {
     // Fetch genres linked to the user
-    const userGenresResponse = await axios.get(`/api/user_preferences/${getUserId()}`);
+    const userGenresResponse = await axios.get(`/api/user_preferences`);
     userGenres.value = userGenresResponse.data;
 
     // Fetch all available genres
@@ -53,11 +53,10 @@ async function addGenre() {
   }
 
   try {
-    const userId = getUserId();
-    await axios.post(`/api/user_preferences`, {userId: userId, genreId: selectedGenreId.value });
+    await axios.post(`/api/user_preferences`, {genreId: selectedGenreId.value });
 
     // Refresh user genres
-    const userGenresResponse = await axios.get(`/api/user_preferences/${userId}`);
+    const userGenresResponse = await axios.get(`/api/user_preferences`);
     userGenres.value = userGenresResponse.data;
 
     selectedGenreId.value = null; // Reset selection
@@ -71,11 +70,10 @@ async function removeGenre(genreId) {
   if (!confirm('Are you sure you want to remove this genre?')) return;
 
   try {
-    const userId = getUserId();
-    await axios.delete(`/api/user_preferences/${userId}/${genreId}`);
+    await axios.delete(`/api/user_preferences/${genreId}`);
 
     // Refresh user genres
-    const userGenresResponse = await axios.get(`/api/user_preferences/${userId}`);
+    const userGenresResponse = await axios.get(`/api/user_preferences`);
     userGenres.value = userGenresResponse.data;
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'Failed to remove genre.';
@@ -92,10 +90,10 @@ async function updateField(field) {
     payload.oldPassword = oldPassword.value;
     payload.newPassword = newPassword.value;
     payload.confirmNewPassword = confirmNewPassword.value;
-    endpoint = `/api/user/${user.value.userId}/password`;
+    endpoint = `/api/user/password`;
   } else {
     payload[field] = userForDisplay.value[field];
-    endpoint = `/api/user/${user.value.userId}/${field}`;
+    endpoint = `/api/user/${field}`;
   }
 
   try {
@@ -134,7 +132,7 @@ function cancelEdit() {
 async function deleteAccount() {
   if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
     try {
-      await axios.delete(`/api/user/${user.value.userId}`);
+      await axios.delete(`/api/user`);
       alert('Account deleted successfully.');
       await logOut()
     } catch (error) {

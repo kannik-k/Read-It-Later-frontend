@@ -43,9 +43,8 @@ function autoResize(event) {
   textarea.style.height = `${textarea.scrollHeight}px`;
 }
 
-// Cancel button
-function redirectToReviews() {
-  router.push(`/book/${review.value.bookId}`); // Redirect to reviews page
+function goBack() {
+  router.back();
 }
 </script>
 
@@ -66,7 +65,7 @@ function redirectToReviews() {
       </div>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <button type="submit">Add Review</button>
-      <button type="button" @click="redirectToReviews" class="cancel">Cancel</button>
+      <button type="button" @click="goBack" class="cancel">Cancel</button>
     </form>
   </div>
 </template>

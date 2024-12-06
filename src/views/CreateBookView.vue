@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { getUserId } from '@/utils/auth.js';
 
 const router = useRouter();
 
@@ -48,7 +47,7 @@ async function submitForm() {
 
 async function addToWishList(bookId) {
   try {
-    await axios.post('/api/wish_list', { userId: getUserId(), bookId });
+    await axios.post('/api/wish_list', { bookId: bookId });
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'Failed to add to wishlist.';
   }

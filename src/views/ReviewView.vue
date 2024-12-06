@@ -51,8 +51,8 @@ function redirectToCreateReview() {
   }
 }
 
-function goBackHome() {
-  router.push('/');
+function goBack() {
+  router.back();
 }
 
 onMounted(() => {
@@ -64,7 +64,7 @@ onMounted(() => {
 <template>
   <div class="book-details">
 
-    <button class="back-button" @click="goBackHome">Back</button>
+    <button class="back-button" @click="goBack">Back</button>
     <div class="book-data">
     <h1>Book Details</h1>
     <div v-if="bookLoading">

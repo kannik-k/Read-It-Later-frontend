@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { getUserId } from '../utils/auth';
 
 
 // Define reactive variables
@@ -50,7 +49,6 @@ function redirectToBookDetails(bookId) {
         <table v-if="books.length" class="wishlist-table" aria-label="Wishlist">
           <thead>
           <tr>
-            <th>Id</th>
             <th>Title</th>
             <th>Author</th>
             <th>Genre</th>
@@ -64,7 +62,6 @@ function redirectToBookDetails(bookId) {
               :key="book.bookId"
               style="cursor: pointer;"
           >
-            <td @click="redirectToBookDetails(book.bookId)">{{ book.bookId }}</td>
             <td @click="redirectToBookDetails(book.bookId)">{{ book.title }}</td>
             <td @click="redirectToBookDetails(book.bookId)">{{ book.author }}</td>
             <td @click="redirectToBookDetails(book.bookId)">{{ book.genre }}</td>
