@@ -121,13 +121,22 @@ function filterByGenre(genre) {
   getBooks()
 }
 
+// Add local state to track errors for wishlist additions
+const wishListError = ref({});
+
+// Update the addToWishList function to handle errors for specific book IDs
 async function addToWishList(bookId) {
-  try {
-    await axios.post(`/api/wish_list`, {bookId: bookId});
+  // Reset all error messages before setting a new one
+  Object.keys(wishListError.value).forEach(key => {
+    wishListError.value[key] = null;
+  });  try {
+    await axios.post(`/api/wish_list`, { bookId });
   } catch (error) {
-    errorMessage.value = error.response?.data.message || 'Failed to add to wishlist.';
+    wishListError.value[bookId] =
+        error.response?.data.message || 'Failed to add to wishlist.';
   }
 }
+
 
 // Call getBooks and getGenres when the component is mounted
 onMounted(() => {
@@ -236,7 +245,14 @@ function redirectToBookDetails(bookId) {
           <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
           <td>{{ book.genre }}</td>
-          <td v-if="!!token" @click.stop="addToWishList(book.bookId)"><button>Add to wishlist</button></td>
+          <td v-if="!!token" @click.stop class="button-column">
+            <button @click="addToWishList(book.bookId)">Add to wishlist</button>
+            <div class="wishlist-error">
+              <p v-if="wishListError[book.bookId]" class="error-message">
+                {{ wishListError[book.bookId] }}
+              </p>
+            </div>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -420,6 +436,14 @@ function redirectToBookDetails(bookId) {
 
 .book-row:hover {
   background-color: var(--color-pink-lavender-darker);
+}
+
+.button-column {
+  width: 25%;
+}
+
+.wishlist-error {
+  word-wrap: break-word;
 }
 @media (min-width: 1024px) {
   .search-container {

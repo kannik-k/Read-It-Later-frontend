@@ -15,6 +15,8 @@ const userGenres = ref([]); // Genres linked to the user
 const allGenres = ref([]); // All genres from the genres table
 const selectedGenreId = ref(null); // For adding a genre
 const errorMessage = ref(null);
+const fieldErrors = ref({}); // Stores errors for specific actions or fields
+
 
 // Fetch user data
 async function fetchUserInfo() {
@@ -48,20 +50,21 @@ async function fetchData() {
 // Add a new genre preference for the user
 async function addGenre() {
   if (!selectedGenreId.value) {
-    errorMessage.value = 'Please select a genre.';
+    fieldErrors.value.addGenre = 'Please select a genre.';
     return;
   }
 
   try {
-    await axios.post(`/api/user_preferences`, {genreId: selectedGenreId.value });
+    await axios.post(`/api/user_preferences`, { genreId: selectedGenreId.value });
 
     // Refresh user genres
     const userGenresResponse = await axios.get(`/api/user_preferences`);
     userGenres.value = userGenresResponse.data;
 
     selectedGenreId.value = null; // Reset selection
+    fieldErrors.value.addGenre = null; // Clear error
   } catch (error) {
-    errorMessage.value = error.response?.data.message || 'Failed to add genre.';
+    fieldErrors.value.addGenre = error.response?.data.message || 'Failed to add genre.';
   }
 }
 
@@ -106,7 +109,7 @@ async function updateField(field) {
     newPassword.value = null;
     confirmNewPassword.value = null;
   } catch (error) {
-    errorMessage.value = error.response?.data.message || `Failed to update ${field}.`;
+    fieldErrors.value[field] = error.response?.data.message || `Failed to update ${field}.`;
   }
 }
 
@@ -177,17 +180,16 @@ onMounted(() => {
         </div>
         <div v-else>
           <label :for="field">{{ field.charAt(0).toUpperCase() + field.slice(1) }}</label>
-          <input
-              :id="field"
-              v-model="userForDisplay[field]"
-              type="text"
-          />
+          <input :id="field" v-model="userForDisplay[field]" type="text" />
           <div class="buttons">
             <button @click="updateField(field)">Save</button>
             <button @click="cancelEdit">Cancel</button>
           </div>
+          <!-- Error Message -->
+          <p v-if="fieldErrors[field]" class="error-message">{{ fieldErrors[field] }}</p>
         </div>
       </div>
+
 
       <!-- Password Field -->
       <div class="field">
@@ -224,8 +226,11 @@ onMounted(() => {
             <button @click="updateField('password')">Save</button>
             <button @click="cancelEdit">Cancel</button>
           </div>
+          <!-- Error Message -->
+          <p v-if="fieldErrors.password" class="error-message">{{ fieldErrors.password }}</p>
         </div>
       </div>
+
         <!-- Display User Genres -->
         <div class="genres">
           <h3>Preferred Genres</h3>
@@ -233,18 +238,26 @@ onMounted(() => {
             <li v-for="genre in userGenres" :key="genre.genreId">
               {{ genre.genreId }}
               <button class="remove-genre" @click="removeGenre(genre.genreId)">Remove</button>
+              <!-- Error message for removing a genre -->
+              <p v-if="fieldErrors[`removeGenre_${genre.genreId}`]" class="error-message">
+                {{ fieldErrors[`removeGenre_${genre.genreId}`] }}
+              </p>
             </li>
           </ul>
 
           <!-- Add Genre -->
-          <div class="add-genre">
-            <select v-model="selectedGenreId">
-              <option disabled value="">Select a genre</option>
-              <option v-for="genre in allGenres" :key="genre.genreId" :value="genre.genreId">
-                {{ genre.genre }}
-              </option>
-            </select>
+          <div>
+            <div class="add-genre">
+              <select v-model="selectedGenreId">
+                <option disabled value="">Select a genre</option>
+                <option v-for="genre in allGenres" :key="genre.genreId" :value="genre.genreId" :disabled="userGenres.some(userGenre => userGenre.genreId === genre.genreId)">
+                  {{ genre.genre }}
+                </option>
+              </select>
             <button @click="addGenre">Add Genre</button>
+            </div>
+            <!-- Error message for adding a genre -->
+            <p v-if="fieldErrors.addGenre" class="error-message">{{ fieldErrors.addGenre }}</p>
           </div>
         </div>
 
@@ -342,6 +355,7 @@ onMounted(() => {
 .buttons {
   display: flex;
   flex-direction: row;
+  gap: 1rem;
 }
 
 .delete-account {
