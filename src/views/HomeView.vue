@@ -1,8 +1,8 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { getUserId, token } from '../utils/auth';
+import { token } from '../utils/auth';
 
 
 // Define reactive variables
@@ -15,6 +15,8 @@ const selectedGenreId = ref(null);
 const currentPage = ref(0);
 const pageSize = ref(10);
 const hasNextPage = ref(false);
+
+const sortOption = ref('title-asc'); // Default sorting option
 
 const lastSearchQuery = ref({
   genreId: null,
@@ -31,6 +33,7 @@ const getBooks = async () => {
       author: lastSearchQuery.value.author,
       page: currentPage.value,
       size: pageSize.value,
+      sort: sortOption.value, // Pass sorting option to backend
     };
 
     const response = await axios.get('/api/public/book', { params });
@@ -46,6 +49,11 @@ const getBooks = async () => {
   }
 };
 
+// Watchers to trigger fetching books when page size or sort option changes
+watch([pageSize, sortOption], () => {
+  currentPage.value = 0; // Reset to first page
+  getBooks();
+});
 
 // Chosen search type (default: title)
 const searchType = ref('title');
@@ -113,13 +121,22 @@ function filterByGenre(genre) {
   getBooks()
 }
 
+// Add local state to track errors for wishlist additions
+const wishListError = ref({});
+
+// Update the addToWishList function to handle errors for specific book IDs
 async function addToWishList(bookId) {
-  try {
-    await axios.post(`/api/wish_list`, {userId: getUserId(), bookId: bookId});
+  // Reset all error messages before setting a new one
+  Object.keys(wishListError.value).forEach(key => {
+    wishListError.value[key] = null;
+  });  try {
+    await axios.post(`/api/wish_list`, { bookId });
   } catch (error) {
-    errorMessage.value = error.response?.data.message || 'Failed to add to wishlist.';
+    wishListError.value[bookId] =
+        error.response?.data.message || 'Failed to add to wishlist.';
   }
 }
+
 
 // Call getBooks and getGenres when the component is mounted
 onMounted(() => {
@@ -191,13 +208,32 @@ function redirectToBookDetails(bookId) {
     <div class="books">
       <button v-if="!!token" type="button" class="add-book" @click="redirectToCreateBook">Add book +</button>
       <h2>Books</h2>
+      <!-- Dropdown Menus -->
+      <div class="dropdown-menus">
+        <!-- Page Size Dropdown -->
+        <label for="pageSize">Books per page:</label>
+        <select id="pageSize" v-model="pageSize">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+
+        <!-- Sorting Dropdown -->
+        <label for="sortOption">Sort by:</label>
+        <select id="sortOption" v-model="sortOption">
+          <option value="title-asc">Title (A-Z)</option>
+          <option value="title-desc">Title (Z-A)</option>
+          <option value="author-asc">Author (A-Z)</option>
+          <option value="author-desc">Author (Z-A)</option>
+        </select>
+      </div>
       <table v-if="books.length" class="book-table" aria-label="Books">
         <thead>
         <tr>
           <th>Title</th>
           <th>Author</th>
           <th>Genre</th>
-          <th v-if="!!token">Wishlist</th>
+          <th v-if="!!token"></th>
         </tr>
         </thead>
         <tbody>
@@ -209,7 +245,14 @@ function redirectToBookDetails(bookId) {
           <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
           <td>{{ book.genre }}</td>
-          <td v-if="!!token" @click.stop="addToWishList(book.bookId)"><button>+</button></td>
+          <td v-if="!!token" @click.stop class="button-column">
+            <button @click="addToWishList(book.bookId)">Add to wishlist</button>
+            <div class="wishlist-error">
+              <p v-if="wishListError[book.bookId]" class="error-message">
+                {{ wishListError[book.bookId] }}
+              </p>
+            </div>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -332,6 +375,25 @@ function redirectToBookDetails(bookId) {
   width: 100px
 }
 
+/* Dropdown Menus */
+.dropdown-menus {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.dropdown-menus label {
+  font-weight: bold;
+}
+
+.dropdown-menus select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
 .books {
   max-width: 80%;
   margin: 0 auto;
@@ -374,6 +436,14 @@ function redirectToBookDetails(bookId) {
 
 .book-row:hover {
   background-color: var(--color-pink-lavender-darker);
+}
+
+.button-column {
+  width: 25%;
+}
+
+.wishlist-error {
+  word-wrap: break-word;
 }
 @media (min-width: 1024px) {
   .search-container {
