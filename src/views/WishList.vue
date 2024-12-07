@@ -22,14 +22,12 @@ const getBooks = async () => {
     }
 
     const response = await axios.get(`/api/wish_list`, { params });
-    console.log(response.data);
 
     books.value = response.data.books && response.data.books.length > 0
         ? response.data.books
         : [];
 
     hasNextPage.value = response.data.hasNextPage || false;
-    console.log('Books:', books.value);
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'An error occurred while fetching the books';
   }

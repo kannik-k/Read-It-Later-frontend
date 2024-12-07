@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { token } from '../utils/auth';
@@ -16,6 +16,12 @@ const bookLoading = ref(true);
 const reviewsLoading = ref(true);
 const errorMessage = ref(null);
 
+// Pagination variables
+const currentPage = ref(0);
+const pageSize = ref(10);
+const hasNextPage = ref(false);
+
+
 const fetchBookDetails = async () => {
   bookLoading.value = true;
   try {
@@ -31,11 +37,19 @@ const fetchBookDetails = async () => {
 const getReviews = async () => {
   reviewsLoading.value = true;
   try {
-    const response = await axios.get(`/api/public/review/${bookId}`);
-    reviews.value = response.data.map(review => ({
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    };
+
+    const response = await axios.get(`/api/public/review/${bookId}`, { params });
+    reviews.value = response.data.reviews.map(review => ({
       bookId: review.bookId,
       review: review.review,
     }));
+
+    hasNextPage.value = response.data.hasNextPage || false;
+    console.log(hasNextPage.value)
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'An error occurred while fetching the reviews';
   } finally {
@@ -43,11 +57,30 @@ const getReviews = async () => {
   }
 };
 
+watch([pageSize], () => {
+  currentPage.value = 0; // Reset to first page
+  getReviews();
+});
+
 function redirectToCreateReview() {
   if (book.value?.bookId) {
     router.push(`/book/${book.value.bookId}/add`);
   } else {
     console.error('Book ID is not available for redirecting.');
+  }
+}
+
+function goToNextPage() {
+  if (hasNextPage.value) {
+    currentPage.value++;
+    getReviews();
+  }
+}
+
+function goToPreviousPage() {
+  if (currentPage.value > 0) {
+    currentPage.value--;
+    getReviews();
   }
 }
 
@@ -62,6 +95,18 @@ onMounted(() => {
 </script>
 
 <template>
+  <!-- Dropdown Menus -->
+  <div class="dropdown-menus">
+
+    <!-- Page Size Dropdown -->
+    <label for="pageSize">Books per page:</label>
+    <select id="pageSize" v-model="pageSize">
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="30">30</option>
+    </select>
+  </div>
+
   <div class="book-details">
 
     <button class="back-button" @click="goBack">Back</button>
@@ -96,6 +141,12 @@ onMounted(() => {
         </p>
       </div>
       <p v-else>No reviews yet.</p>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+      <button :disabled="currentPage === 0" @click="goToPreviousPage">Previous</button>
+      <span class="page-number">Page {{ currentPage + 1 }}</span>
+      <button :disabled="!hasNextPage" @click="goToNextPage">Next</button>
     </div>
   </div>
 </template>
@@ -147,5 +198,40 @@ onMounted(() => {
   overflow-wrap: break-word;
   white-space: normal;
   margin: 0.5rem 0;
+}
+
+/* Dropdown Menus */
+.dropdown-menus {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.dropdown-menus label {
+  font-weight: bold;
+}
+
+.dropdown-menus select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+/* Pagination */
+.pagination {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Space between elements */
+  margin: 1rem auto;
+}
+
+.page-number {
+  display: inline-block;
+  margin: 0 10px;
+  text-align: center;
 }
 </style>
