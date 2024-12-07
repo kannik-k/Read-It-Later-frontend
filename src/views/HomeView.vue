@@ -112,6 +112,13 @@ const getGenres = async () => {
   }
 };
 
+const isSidebarCollapsed = ref(true);
+
+function toggleSidebar() {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+}
+
+
 // Function to handle genre selection with sidebar
 function filterByGenre(genre) {
   selectedGenre.value = genre;
@@ -157,20 +164,24 @@ function redirectToBookDetails(bookId) {
 <template>
   <div class="page-layout">
   <!-- Sidebar -->
-  <aside class="sidebar">
-    <h3>Genres</h3>
-    <ul>
-      <li
-          v-for="genre in genres"
-          :key="genre"
-          :value="genre.genreId"
-          :class="{ active: selectedGenre === genre }"
-          @click="filterByGenre(genre)"
-      >
-        {{ genre.genre }}
-      </li>
-    </ul>
-  </aside>
+    <aside :class="{ collapsed: isSidebarCollapsed }" class="sidebar">
+      <button class="toggle-button" @click="toggleSidebar">
+        {{ isSidebarCollapsed ? '→' : '←' }}
+      </button>
+      <div v-if="!isSidebarCollapsed">
+        <h3>Genres</h3>
+        <ul>
+          <li
+              v-for="genre in genres"
+              :key="genre.genreId"
+              :class="{ active: selectedGenre === genre }"
+              @click="filterByGenre(genre)"
+          >
+            {{ genre.genre }}
+          </li>
+        </ul>
+      </div>
+    </aside>
 
   <!-- Search bar -->
   <main class="main-content">
@@ -278,12 +289,36 @@ function redirectToBookDetails(bookId) {
 
 /* Sidebar */
 .sidebar {
-  width: 150px;
+  width: 25vw;
   background-color: var(--color-pink-lavender);
   padding: 1rem;
   border-right: 1px solid var(--color-pink-lavender-darker);
   top: 0;
   left: 0;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 5vw; /* Adjust as needed */
+  border: none;
+}
+.sidebar .toggle-button {
+  position: absolute;
+  top: 10px;
+  right: -40px; /* Adjust to fit button appearance */
+  background-color: transparent;
+  border: none;
+  color: var(--color-space-cadet);
+  border-radius: 50%;
+  width: 50px;
+  height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sidebar.collapsed .toggle-button {
+  right: -5vw; /* Adjust position for collapsed state */
 }
 
 .sidebar h3 {
@@ -295,6 +330,14 @@ function redirectToBookDetails(bookId) {
   list-style: none;
   padding: 0;
   margin: 0;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+
+.sidebar.collapsed ul {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .sidebar li {
@@ -332,6 +375,7 @@ function redirectToBookDetails(bookId) {
   border: 1px solid var(--color-pink-lavender-darker);
   border-radius: 8px;
   margin: 0 auto 2vw auto;
+  width: 80%;
 }
 
 .search-bar {
@@ -446,8 +490,14 @@ function redirectToBookDetails(bookId) {
   word-wrap: break-word;
 }
 @media (min-width: 1024px) {
-  .search-container {
-    width: 80%;
+  .sidebar {
+    width: 20vw;
+  }
+  .sidebar.collapsed .toggle-button {
+    right: 0;
+  }
+  .sidebar .toggle-button {
+    right: -50px;
   }
 }
 </style>
