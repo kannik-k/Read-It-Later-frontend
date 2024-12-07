@@ -112,7 +112,7 @@ const getGenres = async () => {
   }
 };
 
-const isSidebarCollapsed = ref(false);
+const isSidebarCollapsed = ref(true);
 
 function toggleSidebar() {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
@@ -307,13 +307,13 @@ function redirectToBookDetails(bookId) {
   position: absolute;
   top: 10px;
   right: -40px; /* Adjust to fit button appearance */
-  background-color: var(--color-pink-lavender-darker);
+  background-color: transparent;
   border: none;
-  color: white;
+  color: var(--color-space-cadet);
   border-radius: 50%;
-  width: 30px;
+  width: 50px;
   height: 30px;
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
 }
 
@@ -495,6 +495,9 @@ function redirectToBookDetails(bookId) {
   }
   .sidebar.collapsed .toggle-button {
     right: 0;
+  }
+  .sidebar .toggle-button {
+    right: -50px;
   }
 }
 </style>
