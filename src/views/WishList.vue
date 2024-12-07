@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
@@ -8,18 +8,37 @@ import { useRouter } from 'vue-router';
 const books = ref([]);
 const errorMessage = ref(null);
 
+// Pagination variables
+const currentPage = ref(0);
+const pageSize = ref(10);
+const hasNextPage = ref(false);
+
 // Fetch books
 const getBooks = async () => {
   try {
-    const response = await axios.get(`/api/wish_list`);
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
 
-    books.value = response.data && response.data.length > 0
-        ? response.data
+    const response = await axios.get(`/api/wish_list`, { params });
+    console.log(response.data);
+
+    books.value = response.data.books && response.data.books.length > 0
+        ? response.data.books
         : [];
+
+    hasNextPage.value = response.data.hasNextPage || false;
+    console.log('Books:', books.value);
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'An error occurred while fetching the books';
   }
 };
+
+watch([pageSize], () => {
+  currentPage.value = 0; // Reset to first page
+  getBooks();
+});
 
 async function removeFromWishList(bookId) {
   try {
@@ -27,6 +46,20 @@ async function removeFromWishList(bookId) {
     await getBooks();
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'Failed to delete from wishlist.';
+  }
+}
+
+function goToNextPage() {
+  if (hasNextPage.value) {
+    currentPage.value++;
+    getBooks();
+  }
+}
+
+function goToPreviousPage() {
+  if (currentPage.value > 0) {
+    currentPage.value--;
+    getBooks();
   }
 }
 
@@ -44,6 +77,17 @@ function redirectToBookDetails(bookId) {
 <template>
   <div class="page-layout">
     <main class="main-content">
+      <!-- Dropdown Menus -->
+      <div class="dropdown-menus">
+
+        <!-- Page Size Dropdown -->
+        <label for="pageSize">Books per page:</label>
+        <select id="pageSize" v-model="pageSize">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+      </div>
       <div class="books">
         <h2>Wishlist</h2>
         <table v-if="books.length" class="wishlist-table" aria-label="Wishlist">
@@ -73,6 +117,12 @@ function redirectToBookDetails(bookId) {
         </table>
         <p v-else class="no-books-message">There are no books yet</p>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      </div>
+      <!-- Pagination -->
+      <div class="pagination">
+        <button :disabled="currentPage === 0" @click="goToPreviousPage">Previous</button>
+        <span class="page-number">Page {{ currentPage + 1 }}</span>
+        <button :disabled="!hasNextPage" @click="goToNextPage">Next</button>
       </div>
     </main>
   </div>
@@ -121,4 +171,40 @@ function redirectToBookDetails(bookId) {
 .book-row:hover {
   background-color: var(--color-pink-lavender-darker);
 }
+
+/* Dropdown Menus */
+.dropdown-menus {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.dropdown-menus label {
+  font-weight: bold;
+}
+
+.dropdown-menus select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+/* Pagination */
+.pagination {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Space between elements */
+  margin: 1rem auto;
+}
+
+.page-number {
+  display: inline-block;
+  margin: 0 10px;
+  text-align: center;
+}
+
 </style>
