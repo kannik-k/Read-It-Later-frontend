@@ -69,11 +69,11 @@ async function addGenre() {
 }
 
 // Remove a genre preference
-async function removeGenre(genreId) {
+async function removeGenre(genre) {
   if (!confirm('Are you sure you want to remove this genre?')) return;
 
   try {
-    await axios.delete(`/api/user_preferences/${genreId}`);
+    await axios.delete(`/api/user_preferences/${genre}`);
 
     // Refresh user genres
     const userGenresResponse = await axios.get(`/api/user_preferences`);
@@ -235,12 +235,12 @@ onMounted(() => {
         <div class="genres">
           <h3>Preferred Genres</h3>
           <ul>
-            <li v-for="genre in userGenres" :key="genre.genreId">
-              {{ genre.genreId }}
-              <button class="remove-genre" @click="removeGenre(genre.genreId)">Remove</button>
+            <li v-for="genre in userGenres" :key="genre.genre">
+              {{ genre.genre }}
+              <button class="remove-genre" @click="removeGenre(genre.genre)">Remove</button>
               <!-- Error message for removing a genre -->
-              <p v-if="fieldErrors[`removeGenre_${genre.genreId}`]" class="error-message">
-                {{ fieldErrors[`removeGenre_${genre.genreId}`] }}
+              <p v-if="fieldErrors[`removeGenre_${genre.genre}`]" class="error-message">
+                {{ fieldErrors[`removeGenre_${genre.genre}`] }}
               </p>
             </li>
           </ul>
