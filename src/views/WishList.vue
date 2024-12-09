@@ -75,19 +75,19 @@ function redirectToBookDetails(bookId) {
 <template>
   <div class="page-layout">
     <main class="main-content">
-      <!-- Dropdown Menus -->
-      <div class="dropdown-menus">
-
-        <!-- Page Size Dropdown -->
-        <label for="pageSize">Books per page:</label>
-        <select id="pageSize" v-model="pageSize">
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-        </select>
-      </div>
       <div class="books">
         <h2>Wishlist</h2>
+        <!-- Dropdown Menus -->
+        <div class="dropdown-menus">
+
+          <!-- Page Size Dropdown -->
+          <label for="pageSize">Books per page:</label>
+          <select id="pageSize" v-model="pageSize">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+        </div>
         <table v-if="books.length" class="wishlist-table" aria-label="Wishlist">
           <thead>
           <tr>
@@ -176,6 +176,7 @@ function redirectToBookDetails(bookId) {
   gap: 1rem;
   align-items: center;
   margin-top: 1rem;
+  width: 40%;
 }
 
 .dropdown-menus label {

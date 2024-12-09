@@ -95,18 +95,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- Dropdown Menus -->
-  <div class="dropdown-menus">
-
-    <!-- Page Size Dropdown -->
-    <label for="pageSize">Books per page:</label>
-    <select id="pageSize" v-model="pageSize">
-      <option value="10">10</option>
-      <option value="20">20</option>
-      <option value="30">30</option>
-    </select>
-  </div>
-
   <div class="book-details">
 
     <button class="back-button" @click="goBack">Back</button>
@@ -128,6 +116,17 @@ onMounted(() => {
       <button v-if="!!token" class="review" @click="redirectToCreateReview">
         Add review
       </button>
+      <!-- Dropdown Menus -->
+      <div class="dropdown-menus">
+
+        <!-- Page Size Dropdown -->
+        <label for="pageSize">Reviews per page:</label>
+        <select id="pageSize" v-model="pageSize">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+      </div>
       <div v-if="reviewsLoading">
         <p>Loading reviews...</p>
       </div>
@@ -206,6 +205,7 @@ onMounted(() => {
   gap: 1rem;
   align-items: center;
   margin-top: 1rem;
+  width: 40%;
 }
 
 .dropdown-menus label {
