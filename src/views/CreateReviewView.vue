@@ -26,7 +26,7 @@ async function submitForm() {
     console.log("Response from server:", response.data);
 
     review.value.review = '';
-    redirectToReviews()
+    goBack()
   } catch (error) {
     if (error.response?.data) {
       errorMessage.value = error.response.data.message || 'An error occurred';
