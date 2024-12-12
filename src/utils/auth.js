@@ -3,14 +3,6 @@ import router from "@/router/index.js";
 
 export const token = localStorage.getItem("user-token")
 
-export function getUserId() {
-    if (token) {
-        const decodedToken = jwtDecode(token)
-        return decodedToken.userId;
-    }
-    return null;
-}
-
 export function getTokenExpirationTime() {
     if (token) {
         const decodedToken = jwtDecode(token)
